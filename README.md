@@ -84,4 +84,3 @@ Where:
 
 - C++17 compatible compiler
 - Standard Template Library (STL)
-- CMake 3.10+ (for building)

@@ -10,10 +10,11 @@ x86/
 
 # Compiled files
 *.o
+*.out
 *.obj
 *.exe
 *.dll
-*.so
+*.so*
 *.dylib
 *.lib
 *.a
