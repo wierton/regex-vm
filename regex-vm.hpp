@@ -1,9 +1,15 @@
+#ifndef REGEX_VM_HPP
+#define REGEX_VM_HPP
+
 #include <assert.h>
 #include <iostream>
 #include <list>
 #include <set>
 #include <stdio.h>
 #include <vector>
+
+namespace regvm {
+
 using namespace std;
 
 // #define DEBUG
@@ -25,7 +31,7 @@ struct vinstr_t {
   int t1, t2;
 };
 
-ostream &operator<<(ostream &os, vinstr_t vinstr) {
+inline ostream &operator<<(ostream &os, vinstr_t vinstr) {
   auto [op, t1, t2] = vinstr;
   switch (op) {
   case vop_split: os << "split " << t1 << "," << t2; break;
@@ -50,7 +56,7 @@ ostream &operator<<(
   return os;
 }
 
-bool match(
+inline bool match(
     const vector<vinstr_t> &vops, string_view input) {
   vector<pair<int, int>> stack;
   stack.emplace_back(0, 0);
@@ -87,7 +93,7 @@ bool match(
   return false;
 }
 
-vector<vinstr_t> parse(string_view input) {
+inline vector<vinstr_t> parse(string_view input) {
   ONDBG(cout << "\n--- parsing " << input << endl);
   vector<char> ops;
   vector<list<vinstr_t>> instrs;
@@ -226,79 +232,6 @@ vector<vinstr_t> parse(string_view input) {
   return ret;
 }
 
-void run_tests() {
-  // Basic character matching
-  assert(match(parse("a"), "a") == true);
-  assert(match(parse("a"), "b") == false);
-  assert(match(parse("abc"), "abc") == true);
-  assert(match(parse("abc"), "abd") == false);
+} // namespace regvm
 
-  // Alternation tests
-  assert(match(parse("a|b"), "a") == true);
-  assert(match(parse("a|b"), "b") == true);
-  assert(match(parse("a|b"), "c") == false);
-  assert(match(parse("cat|dog"), "cat") == true);
-  assert(match(parse("cat|dog"), "dog") == true);
-  assert(match(parse("cat|dog"), "rat") == false);
-
-  // Kleene star tests
-  assert(match(parse("a*"), "") == true);
-  assert(match(parse("a*"), "a") == true);
-  assert(match(parse("a*"), "aaa") == true);
-  assert(match(parse("a*"), "b") == false);
-  assert(match(parse("(ab)*"), "") == true);
-  assert(match(parse("(ab)*"), "ab") == true);
-  assert(match(parse("(ab)*"), "abab") == true);
-  assert(match(parse("(ab)*"), "aba") == false);
-
-  // Plus operator tests
-  assert(match(parse("a+"), "") == false);
-  assert(match(parse("a+"), "a") == true);
-  assert(match(parse("a+"), "aaa") == true);
-  assert(match(parse("(ab)+"), "") == false);
-  assert(match(parse("(ab)+"), "ab") == true);
-  assert(match(parse("(ab)+"), "abab") == true);
-
-  // Complex patterns
-  assert(match(parse("(a|b)*abb"), "abb") == true);
-  assert(match(parse("(a|b)*abb"), "aabb") == true);
-  assert(match(parse("(a|b)*abb"), "babb") == true);
-  assert(match(parse("(a|b)*abb"), "ababb") == true);
-  assert(match(parse("(a|b)*abb"), "abc") == false);
-
-  // Nested groups
-  assert(match(parse("((a|b)+)(c|d)"), "ac") == true);
-  assert(match(parse("((a|b)+)(c|d)"), "bd") == true);
-  assert(match(parse("((a|b)+)(c|d)"), "aaac") == true);
-  assert(match(parse("((a|b)+)(c|d)"), "bbbd") == true);
-  assert(match(parse("((a|b)+)(c|d)"), "e") == false);
-
-  // Mixed operators
-  assert(match(parse("a+(b|c)*d"), "ad") == true);
-  assert(match(parse("a+(b|c)*d"), "abd") == true);
-  assert(match(parse("a+(b|c)*d"), "abcd") == true);
-  assert(match(parse("a+(b|c)*d"), "aaaabbbcd") == true);
-  assert(match(parse("a+(b|c)*d"), "bcd") == false);
-
-  // Edge cases
-  assert(match(parse("(a|)*"), "") == true);
-  assert(match(parse("(a|)*"), "a") == true);
-  assert(match(parse("((a)|)*"), "aaa") == true);
-  assert(match(parse("()*"), "") == true);
-
-  // Long patterns
-  assert(
-      match(parse("(ab|cd)*(ef|gh)+"), "abcdefgh") == true);
-  assert(
-      match(parse("(ab|cd)*(ef|gh)+"), "ababefef") == true);
-  assert(
-      match(parse("(ab|cd)*(ef|gh)+"), "cdcdghgh") == true);
-  assert(match(parse("(ab|cd)*(ef|gh)+"), "abcd") == false);
-
-  cout << "All tests passed!" << endl;
-}
-
-int main() {
-  run_tests();
-  return 0;
-}
+#endif

@@ -61,12 +61,8 @@ int main() {
 ```bash
 # Build with CMake
 cd regex-vm
-mkdir build && cd build
-cmake ..
-make
-
-# Run tests
-./regex_vm_tests
+g++ main.cc -o regex-vm.test
+./regex-vm.test
 ```
 
 ## 📊 Performance Metrics
