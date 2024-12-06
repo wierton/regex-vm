@@ -3,7 +3,7 @@
 
 ## 🌟 Overview
 
-This project implements a virtual machine for regular expression pattern matching, based on Thompson's construction algorithm. It combines elegance with efficiency, providing a clean and performant solution for regex operations.
+This project implements a virtual machine for regular expression pattern matching, based on [Pike bytecode](https://swtch.com/~rsc/regexp/regexp2.html). It combines elegance with efficiency, providing a clean and performant solution for regex operations.
 
 ## ✨ Key Features
 
